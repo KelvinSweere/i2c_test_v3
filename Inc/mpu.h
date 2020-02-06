@@ -8,6 +8,9 @@ void convertRegister2Value(uint8_t *param1, uint8_t *param2, uint16_t *result);
 uint8_t checkForI2CConnection();
 void initMpu6050(void);
 
+//Defines
+#define MPU_ADR 0x78
+
 //datatypes
 volatile uint8_t gyro_bool;
 

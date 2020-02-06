@@ -42,9 +42,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-I2C_HandleTypeDef hi2c1;
-
-UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
@@ -95,7 +92,7 @@ int main(void)
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+//  initMpu6050();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,8 +101,14 @@ int main(void)
   {
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
-	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
+	  uint16_t val;
+	  val = read_register(0x0D);
 
+	  char buf[8];
+	  itoa(val,buf,16);	//print in hex
+	  printString(buf);
+
+	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
 	  HAL_Delay(500);
   }
   /* USER CODE END 3 */
