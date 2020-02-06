@@ -21,7 +21,7 @@ HAL_StatusTypeDef ret;
 
 //datatypes
 volatile uint8_t gyro_is_available;
-const uint8_t register_address = REG_TO_READ;
+uint8_t register_address;
 
 //struct aanmaken.
 struct registers

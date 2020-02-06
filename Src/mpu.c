@@ -2,23 +2,29 @@
 #include "main.h"
 
 
-//-----------------------------------------
-//init
+/**
+ * @brief 	initalize the mpu6050 gyroscope, tries to connect with i2c.
+ */
 void initMpu6050(void)
 {
 	//test 3x times 1000 ms.
 	gyro_is_available = (HAL_I2C_IsDeviceReady(&hi2c1, MPU_ADR, 3, 1000) != HAL_OK) ? HAL_ERROR : HAL_OK;
+	//variabelen init.
+	register_address = REG_TO_READ;
 }
 
-//-----------------------------------------
-//register functies
 
+/**
+ * @brief reads a register value from the mpu6050 gyroscope.
+ * @param[in] register_pointer register from the mpu6050 what needs to read.
+ */
 uint16_t read_register(uint8_t register_pointer)
 {
 	uint16_t data;
 	if(gyro_is_available == HAL_OK)	//gyroscope is available
 	{
-		while(HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)MPU_ADR, &register_address, 1, 1000) != HAL_OK)
+		//FIXME: &register_address moet register_pointer worden.
+		while(HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)MPU_ADR, &register_address, UINT8_MAX, 0xFFFF) != HAL_OK)
 			{
 
 			 //Error_Handler() function is called when Timeout error occurs.
@@ -31,7 +37,7 @@ uint16_t read_register(uint8_t register_pointer)
 			}
 
 			/* Receieve data in the register */
-			while(HAL_I2C_Master_Receive(&hi2c1, MPU_ADR, &data, 2, 1000) != HAL_OK)
+			while(HAL_I2C_Master_Receive(&hi2c1, (uint16_t)MPU_ADR, &data, UINT16_MAX, 0xFFFF) != HAL_OK)
 			{
 
 			/* Error_Handler() function is called when Timeout error occurs.
@@ -44,6 +50,7 @@ uint16_t read_register(uint8_t register_pointer)
 			}
 			return data;
 	}
+
 	return -1;
 }
 
@@ -66,7 +73,7 @@ void printString(char *s)
 {
     for(;*s!='\0';s++)
     {
-		HAL_UART_Transmit(&huart2, s, (uint16_t)1, (uint32_t)0xFFFF);
+		HAL_UART_Transmit(&huart2, s, 1, (uint32_t)0xFFFF);
     }
 	HAL_UART_Transmit(&huart2, (uint16_t)"\n", 1, 0xFFFF);
 }

@@ -92,7 +92,7 @@ int main(void)
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-//  initMpu6050();
+  initMpu6050();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -102,12 +102,9 @@ int main(void)
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
 	  uint16_t val;
-	  val = read_register(0x0D);
-
-	  char buf[8];
-	  itoa(val,buf,16);	//print in hex
-	  printString(buf);
-
+	  val = read_register(0x75);
+	  char tx[10];
+	  HAL_UART_Transmit(&huart2, (uint8_t *)tx, sprintf(tx, "data: %d\n", val), 500);
 	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
 	  HAL_Delay(500);
   }
