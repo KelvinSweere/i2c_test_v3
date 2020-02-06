@@ -6,31 +6,45 @@
 //init
 void initMpu6050(void)
 {
-	gyro_bool = checkForI2CConnection();
-}
-
-
-uint8_t checkForI2CConnection()
-{
-	const uint8_t check_register_x = 0x0D;
-	uint16_t val;
-	val = read_register(check_register_x);
-	return val;
+	//test 3x times 1000 ms.
+	gyro_is_available = (HAL_I2C_IsDeviceReady(&hi2c1, MPU_ADR, 3, 1000) != HAL_OK) ? HAL_ERROR : HAL_OK;
 }
 
 //-----------------------------------------
-//register uitlees functies.
+//register functies
 
 uint16_t read_register(uint8_t register_pointer)
 {
-    HAL_StatusTypeDef status = HAL_OK;
-    uint16_t return_value = 0;
+	uint16_t data;
+	if(gyro_is_available == HAL_OK)	//gyroscope is available
+	{
+		while(HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)MPU_ADR, &register_address, 1, 1000) != HAL_OK)
+			{
 
-    status = HAL_I2C_Mem_Read(&hi2c1, (uint16_t)MPU_ADR, register_pointer, I2C_MEMADD_SIZE_8BIT, &return_value, 2, 100);
-    if(status != HAL_OK)
-    {
-    }
-    return return_value;
+			 //Error_Handler() function is called when Timeout error occurs.
+		     //When Acknowledge failure occurs (Slave don't acknowledge it's address)
+		     //Master restarts communication
+		    if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
+		    {
+		      Error_Handler();
+		    }
+			}
+
+			/* Receieve data in the register */
+			while(HAL_I2C_Master_Receive(&hi2c1, MPU_ADR, &data, 2, 1000) != HAL_OK)
+			{
+
+			/* Error_Handler() function is called when Timeout error occurs.
+		       When Acknowledge failure occurs (Slave don't acknowledge it's address)
+		       Master restarts communication */
+		    if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
+		    {
+		      Error_Handler();
+		    }
+			}
+			return data;
+	}
+	return -1;
 }
 
 /**
