@@ -1,3 +1,4 @@
 Debug/*
 startup/
 STM32F407VGTx_FLASH.ld
+/Debug/
