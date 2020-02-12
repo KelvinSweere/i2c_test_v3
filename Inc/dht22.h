@@ -22,12 +22,10 @@ void set_gpio_output();
 //defines
 #define DHT22_PORT	GPIOD
 #define DHT22_PIN	GPIO_PIN_10
+#define DHT22_OK	0x
 
 //variables
 uint8_t check;
-
-//handles
-
 
 struct DHT22_data_struct
 {

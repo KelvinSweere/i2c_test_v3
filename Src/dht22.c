@@ -88,21 +88,39 @@ uint8_t get_byte_from_dht22(void)
 	if(check)
 	{
 		//Read files from the struct.
+		uint8_t checksum;
 		uint8_t *pDHT22_data;
 		pDHT22_data = &DHT22_data;
 		int i;
 		for(i=0;i<5;i++,pDHT22_data++)
 			*pDHT22_data = read_data();
+		pDHT22_data = &DHT22_data;	//reset pointer
 
-		DHT22_data.humidty = (DHT22_data.high_hum << 8) | DHT22_data.low_hum;
-		DHT22_data.temp = (DHT22_data.high_temp << 8) | DHT22_data.low_temp;
+		/*
+		checksum = DHT22_data.high_hum;
 
-	//	float tmp = (float) DHT22_data.humidty;
+		for(i=1, pDHT22_data = &DHT22_data.low_hum;i<4;i++,pDHT22_data++)
+			checksum = checksum & (uint8_t) pDHT22_data;
 
-		char tx[64];
-	//	HAL_UART_Transmit(&huart2,(char*)tx,sprintf(tx,"%f\n",tmp),0xFFFF);
-	//	sprintf(tx, "%.2f", tmp);
-		HAL_UART_Transmit(&huart2, (char*)tx,sprintf(tx,"DEBUG!\n",0),0xFFFF);
+		if(checksum == DHT22_data.checksum)
+		{
+		*/
+			DHT22_data.humidty = (DHT22_data.high_hum << 8) | DHT22_data.low_hum;
+			DHT22_data.temp = (DHT22_data.high_temp << 8) | DHT22_data.low_temp;
+
+			float tmp = (float) ((int) DHT22_data.humidty)/10;
+			HAL_UART_Transmit(&huart2,(char*)tx,sprintf(tx,"tmp = %f\n",tmp),0xFFFF);
+
+
+		//	HAL_UART_Transmit(&huart2,(char*)tx,sprintf(tx,"%f\n",tmp),0xFFFF);
+		//	sprintf(tx, "%.2f", tmp);
+			/*
+			HAL_UART_Transmit(&huart2, (char*)tx,sprintf(tx,"DEBUG!\n",0),0xFFFF);
+		}
+		else
+			HAL_UART_Transmit(	&huart2, (char*)tx,sprintf(tx,"Checksum error! Calculated %d\n",
+								checksum),0xFFFF);
+			*/
 	}
 	else
 		HAL_UART_Transmit(&huart2, (char*)tx,sprintf(tx,"No data found\n",0),0xFFFF);
