@@ -32,13 +32,21 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdint.h>
+
 #include "mpu.h"
+#include "dht22.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 I2C_HandleTypeDef hi2c1;
+
+TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim3;
+
 UART_HandleTypeDef huart2;
+GPIO_InitTypeDef GPIO_InitStruct;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -87,6 +95,8 @@ void Error_Handler(void);
 #define BOOT1_GPIO_Port GPIOB
 #define CLK_IN_Pin GPIO_PIN_10
 #define CLK_IN_GPIO_Port GPIOB
+#define DHT22_PIN_Pin GPIO_PIN_10
+#define DHT22_PIN_GPIO_Port GPIOD
 #define LD4_Pin GPIO_PIN_12
 #define LD4_GPIO_Port GPIOD
 #define LD3_Pin GPIO_PIN_13
