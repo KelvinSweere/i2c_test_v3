@@ -18,11 +18,15 @@ uint8_t read_data (void);
 void HAL_Delay_Microseconds (uint16_t us);
 void set_gpio_input();
 void set_gpio_output();
+float* dht22_get_humidity_and_temperature(void);
 
 //defines
+
+#define DHT22_UART_DEBUG
+
 #define DHT22_PORT	GPIOD
 #define DHT22_PIN	GPIO_PIN_10
-#define DHT22_OK	0x
+#define DHT22_OK	0x01
 
 //variables
 uint8_t check;
@@ -35,11 +39,11 @@ struct DHT22_data_struct
 	uint8_t low_temp;
 	uint8_t checksum;
 
-	uint16_t humidty;
-	uint16_t temp;
+	float humidty;
+	float temp;
 };
 
-struct DHT22_data_struct DHT22_data;
+static struct DHT22_data_struct DHT22_data;
 
 
 #endif /* DHT22_H_ */

@@ -76,58 +76,51 @@ void HAL_Delay_Microseconds (uint16_t us)
 
 /**
  * @brief read a byte from the dht22.
- * @return byte from the dht22.
+ * @return (float*) adress of humidity in struct.
  */
-uint8_t get_byte_from_dht22(void)
+float* dht22_get_humidity_and_temperature(void)
 {
-
 	DHT22_start();
 	check_response();
 	char tx[64];
 
-	if(check)
+	if(check)	//if device is found
 	{
 		//Read files from the struct.
-		uint8_t checksum;
-		uint8_t *pDHT22_data;
-		pDHT22_data = &DHT22_data;
+		uint8_t checksum = 0;	//two bytes
+		uint8_t *pDHT22_data;	//pointer to first addres of 8bit values.
+		pDHT22_data = (uint8_t*) &DHT22_data;
 		int i;
 		for(i=0;i<5;i++,pDHT22_data++)
+		{
 			*pDHT22_data = read_data();
-		pDHT22_data = &DHT22_data;	//reset pointer
-
-		/*
-		checksum = DHT22_data.high_hum;
-
-		for(i=1, pDHT22_data = &DHT22_data.low_hum;i<4;i++,pDHT22_data++)
-			checksum = checksum & (uint8_t) pDHT22_data;
+			if(i!=4)
+				checksum += *pDHT22_data;
+		}
 
 		if(checksum == DHT22_data.checksum)
 		{
-		*/
-			DHT22_data.humidty = (DHT22_data.high_hum << 8) | DHT22_data.low_hum;
-			DHT22_data.temp = (DHT22_data.high_temp << 8) | DHT22_data.low_temp;
-
-			float tmp = (float) ((int) DHT22_data.humidty)/10;
-			HAL_UART_Transmit(&huart2,(char*)tx,sprintf(tx,"tmp = %f\n",tmp),0xFFFF);
-
-
-		//	HAL_UART_Transmit(&huart2,(char*)tx,sprintf(tx,"%f\n",tmp),0xFFFF);
-		//	sprintf(tx, "%.2f", tmp);
-			/*
-			HAL_UART_Transmit(&huart2, (char*)tx,sprintf(tx,"DEBUG!\n",0),0xFFFF);
+			DHT22_data.humidty = (float)((int)(DHT22_data.high_hum << 8) | DHT22_data.low_hum)/10;
+			DHT22_data.temp = (float)((int)(DHT22_data.high_temp << 8) | DHT22_data.low_temp)/10;
+			#ifdef DHT22_UART_DEBUG
+			HAL_UART_Transmit(&huart2,(char*)tx,sprintf(tx,"Humidity = %.2f\t",DHT22_data.humidty),0xFFFF);
+			HAL_UART_Transmit(&huart2,(char*)tx,sprintf(tx,"Temp = %.2f\n",DHT22_data.temp),0xFFFF);
+			#endif
 		}
 		else
+		{
+			#ifdef DHT22_UART_DEBUG
 			HAL_UART_Transmit(	&huart2, (char*)tx,sprintf(tx,"Checksum error! Calculated %d\n",
 								checksum),0xFFFF);
-			*/
+			#endif
+		}
 	}
 	else
-		HAL_UART_Transmit(&huart2, (char*)tx,sprintf(tx,"No data found\n",0),0xFFFF);
+	{
+		#ifdef DHT22_UART_DEBUG
+		HAL_UART_Transmit(&huart2, (char*)tx,sprintf(tx,"No data found\n"),0xFFFF);
+		#endif
+	}
 
-
-	//TODO: convert 2 bytes to float humidity en temperature.
-
-	//TODO: goede datatype teruggeven
-	return 0;
+	return &DHT22_data.humidty;
 }

@@ -120,15 +120,19 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  /*
-	  uint16_t val;
-	  val = read_register(0x75);
-	  char tx[10];
-	  HAL_UART_Transmit(&huart2, (uint8_t *)tx, sprintf(tx, "data: %d\n", val), 500);
-	  */
+	  float* struct_adres;
+	  struct_adres = dht22_get_humidity_and_temperature();	//returns addres of humidty in struct.
 
-	  uint8_t tmp;
-	  tmp = get_byte_from_dht22();
+	  float array_of_values[2];
+	  array_of_values[0] = *struct_adres;
+	  array_of_values[1] = *(++struct_adres);
+
+
+	  //struct_adres = humidity, struct_adres+1 = temperature.
+
+	  char tx[64];
+	HAL_UART_Transmit(&huart2,(char*)tx,sprintf(tx,"humidty = %f\t temperature = %f\n",*struct_adres,*(++struct_adres)),0xFFFF);
+
 
 //	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
 	  HAL_Delay(500);
