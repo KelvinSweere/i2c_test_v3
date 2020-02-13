@@ -124,14 +124,11 @@ int main(void)
 	  struct_adres = dht22_get_humidity_and_temperature();	//returns addres of humidty in struct.
 
 	  float array_of_values[2];
-	  array_of_values[0] = *struct_adres;
-	  array_of_values[1] = *(++struct_adres);
-
-
-	  //struct_adres = humidity, struct_adres+1 = temperature.
+	  array_of_values[0] = *struct_adres;		//humidity
+	  array_of_values[1] = *(++struct_adres);	//temperature
 
 	  char tx[64];
-	HAL_UART_Transmit(&huart2,(char*)tx,sprintf(tx,"humidty = %f\t temperature = %f\n",*struct_adres,*(++struct_adres)),0xFFFF);
+	  HAL_UART_Transmit(&huart2,(char*)tx,sprintf(tx,"humidty = %.2f\t temperature = %.2f\n",array_of_values[0],array_of_values[1]),0xFFFF);
 
 
 //	  HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);

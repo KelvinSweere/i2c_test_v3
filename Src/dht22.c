@@ -8,30 +8,37 @@
  */
 
 #include "main.h"
-//#include "stm32f4xx_hal_gpio.h"
 
+/**
+ * @brief start the communication with the sensor. Set first the gpio as a output and after as a input.
+ */
 void DHT22_start (void)
 {
  set_gpio_output (); // set the pin as output
  HAL_GPIO_WritePin (DHT22_PORT, DHT22_PIN, 0); // pull the pin low
  HAL_Delay_Microseconds(1800);
-// HAL_Delay(18);
  set_gpio_input (); // set as input
 }
 
+/**
+ * @brief checks if the DHT22 sensors is connected.
+ */
 void check_response (void)
 {
 	HAL_Delay_Microseconds(40);
  if (!(HAL_GPIO_ReadPin (DHT22_PORT, DHT22_PIN))) // if the pin is low
  {
 	 HAL_Delay_Microseconds(80);
-	 check = (HAL_GPIO_ReadPin (DHT22_PORT, DHT22_PIN)) ? 1 : 0;
+	 check = (HAL_GPIO_ReadPin (DHT22_PORT, DHT22_PIN)) ? 1 : 0;	//check boolean to check if the sensor is connected.
  }
 
  if(check)
  	 while ((HAL_GPIO_ReadPin (DHT22_PORT, DHT22_PIN))); // wait for the pin to go low
 }
-
+/**
+ * @brief reads a byte.
+ * @returns (uint8_t) byte.
+ */
 uint8_t read_data (void)
 {
 	uint8_t i,j;
@@ -49,6 +56,9 @@ uint8_t read_data (void)
 	return i;
 }
 
+/**
+ * @brief set the pin of the DHT22 data pin as an input.
+ */
 void set_gpio_output()
 {
   /*Configure GPIO pin : DHT22_PIN__Pin */
@@ -59,6 +69,9 @@ void set_gpio_output()
   HAL_GPIO_Init(DHT22_PORT, &GPIO_InitStruct);
 }
 
+/**
+ * @brief set the pin of the DHT22 data pin as an input.
+ */
 void set_gpio_input()
 {
   /*Configure GPIO pins : DHT22_PIN_Pin OTG_FS_OverCurrent_Pin */
@@ -76,6 +89,7 @@ void HAL_Delay_Microseconds (uint16_t us)
 
 /**
  * @brief read a byte from the dht22.
+ * @param void
  * @return (float*) adress of humidity in struct.
  */
 float* dht22_get_humidity_and_temperature(void)
@@ -88,7 +102,7 @@ float* dht22_get_humidity_and_temperature(void)
 	{
 		//Read files from the struct.
 		uint8_t checksum = 0;	//two bytes
-		uint8_t *pDHT22_data;	//pointer to first addres of 8bit values.
+		uint8_t *pDHT22_data;	//pointer to first address of 8bit values.
 		pDHT22_data = (uint8_t*) &DHT22_data;
 		int i;
 		for(i=0;i<5;i++,pDHT22_data++)
